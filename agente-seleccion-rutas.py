@@ -2,8 +2,8 @@ import tkinter as tk
 import random
 
 # Configuración del entorno
-tile_size = 50
-width, height = 10, 10  # Tamaño del grid
+tile_size = 25
+width, height = 24, 24  # Tamaño del grid
 directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]  # Derecha, Izquierda, Abajo, Arriba
 
 class RouteSelectionAgent:
@@ -12,7 +12,7 @@ class RouteSelectionAgent:
         self.grid_size = grid_size
         self.x, self.y = 0, 0  # Posición inicial
         self.rewards = self.generate_rewards()
-        self.obstacles = [(random.randint(2, grid_size - 2), random.randint(2, grid_size - 2)) for _ in range(5)]
+        self.obstacles = [(random.randint(2, grid_size - 2), random.randint(2, grid_size - 2)) for _ in range(20)]
         self.draw_environment()
         self.agent = self.canvas.create_rectangle(self.x * tile_size, self.y * tile_size, 
                                                   (self.x + 1) * tile_size, (self.y + 1) * tile_size, fill="blue")
@@ -26,7 +26,7 @@ class RouteSelectionAgent:
             for j in range(self.grid_size):
                 color = "white" if (i, j) not in self.obstacles else "red"
                 self.canvas.create_rectangle(i * tile_size, j * tile_size, (i + 1) * tile_size, (j + 1) * tile_size, fill=color, outline="gray")
-                self.canvas.create_text(i * tile_size + 25, j * tile_size + 25, text=str(self.rewards[i][j]), font=("Arial", 12))
+                self.canvas.create_text(i * tile_size + tile_size//2, j * tile_size + tile_size//2, text=str(self.rewards[i][j]), font=("Arial", 8))
     
     def find_best_path(self):
         path = []
@@ -47,14 +47,22 @@ class RouteSelectionAgent:
             else:
                 break  # Si no hay movimientos válidos, se detiene
             self.canvas.update()
-            self.canvas.after(500)
+            self.canvas.after(100)
         print("Ruta óptima recorrida:", path)
+
+def restart():
+    canvas.delete("all")
+    global agent
+    agent = RouteSelectionAgent(canvas, width)
 
 # Crear ventana
 root = tk.Tk()
 root.title("Agente de Selección de Rutas")
 canvas = tk.Canvas(root, width=width * tile_size, height=height * tile_size)
 canvas.pack()
+
+btn_restart = tk.Button(root, text="Reiniciar", command=restart)
+btn_restart.pack()
 
 # Crear y ejecutar el agente
 agent = RouteSelectionAgent(canvas, width)
